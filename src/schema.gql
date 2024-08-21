@@ -1,0 +1,188 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type User {
+  id: ID!
+  fullName: String!
+  email: String!
+  roles: [String!]!
+  isActive: Boolean!
+  lastUpdateBy: User
+
+  """Este campo permite contar cuantas listas posee un usuario por su Id."""
+  itemCount: Int!
+
+  """
+  Este campo permite obtener los items en base al Id de un usuario, se puede limitar , dar un offset y como tercer parametro filtrar por el nombre del item que se busca.
+  """
+  items(offset: Int = 0, limit: Int = 10, search: String): [Item!]!
+
+  """Este campo permite obtener las listas en relacion al Id del usuario."""
+  lists(offset: Int = 0, limit: Int = 10, search: String): [List!]!
+}
+
+type List {
+  id: ID!
+  name: String!
+  user: User!
+
+  """Obtienes todos las lista de items en relacion al Id de una lista."""
+  gestListItems(offset: Int = 0, limit: Int = 10, search: String): [ListItem!]!
+
+  """Obtienes la cantidad de listas de items en relacion a una lista."""
+  totalItems: Float!
+}
+
+type ListItem {
+  id: String!
+  quantity: Float!
+  completed: Boolean!
+  list: List!
+  item: Item!
+}
+
+type Item {
+  id: ID!
+  name: String!
+  quantityUnits: String
+  user: User!
+  listItem: [ListItem!]!
+}
+
+type AuthResponse {
+  token: String!
+  user: User!
+}
+
+type Query {
+  """Busca todos los items en base al Id de un usuario."""
+  items(offset: Int = 0, limit: Int = 10, search: String): [Item!]!
+
+  """Busca un item en base a su Id."""
+  item(id: ID!): Item!
+
+  """Permite obtener todos los usuarios"""
+  users(roles: [ValidRoles!] = []): [User!]!
+
+  """Permite obtener un usuario por su Id."""
+  user(id: ID!): User!
+
+  """
+  Obtienes todas las listas en relacion a un usuario. 2 parametro: offset y limit . 3 parametro: nombre/string de la lista.
+  """
+  lists(offset: Int = 0, limit: Int = 10, search: String): [List!]!
+
+  """Busca una lista por el Id."""
+  list(id: ID!): List!
+
+  """Busca una lista de items en base a su Id."""
+  listItem(id: ID!): ListItem!
+
+  """Validacion del token sino devuelve uno actualizado."""
+  revalidate: AuthResponse!
+}
+
+enum ValidRoles {
+  admin
+  user
+  superUser
+}
+
+type Mutation {
+  """Creacion de un item."""
+  createItem(createItemInput: CreateItemInput!): Item!
+
+  """Actualiza un item."""
+  updateItem(updateItemInput: UpdateItemInput!): Item!
+
+  """Remueve un item."""
+  removeItem(id: ID!): Item!
+
+  """Se bloquea un usuario para que no pueda manipular ni solicitar data."""
+  blockUser(id: ID!): User!
+
+  """Actualiza un usuario y lo busca en base a su Id."""
+  updateUser(updateUser: UpdateUserInput!): User!
+
+  """Crea una lista."""
+  createList(createListInput: CreateListInput!): List!
+
+  """Actualiza una lista."""
+  updateList(updateListInput: UpdateListInput!): List!
+
+  """Remueve una lista."""
+  removeList(id: ID!): List!
+
+  """crea una lista de items."""
+  createListItem(createListItemInput: CreateListItemInput!): ListItem!
+
+  """Actualiza una lista de items."""
+  updateListItem(updateListItemInput: UpdateListItemInput!): ListItem!
+
+  """Crea un usuario y lo logea."""
+  singUp(singupInput: SingupInput!): AuthResponse!
+
+  """Login de la aplicacion."""
+  login(loginInput: LoginInput!): AuthResponse!
+
+  """
+  Inyecta en la base de datos y las tablas con registros(previamente limpia todo registro).
+  """
+  executeSeed: Boolean!
+}
+
+input CreateItemInput {
+  name: String!
+  quantityUnits: String
+}
+
+input UpdateItemInput {
+  name: String
+  quantityUnits: String
+  id: ID!
+}
+
+input UpdateUserInput {
+  email: String
+  fullName: String
+  password: String
+  id: ID!
+  roles: [ValidRoles!]
+  isActive: Boolean
+}
+
+input CreateListInput {
+  name: String!
+}
+
+input UpdateListInput {
+  name: String
+  id: ID!
+}
+
+input CreateListItemInput {
+  quantity: Float = 0
+  completed: Boolean! = false
+  listId: ID!
+  itemId: ID!
+}
+
+input UpdateListItemInput {
+  quantity: Float = 0
+  completed: Boolean = false
+  listId: ID
+  itemId: ID
+  id: ID!
+}
+
+input SingupInput {
+  email: String!
+  fullName: String!
+  password: String!
+}
+
+input LoginInput {
+  email: String!
+  password: String!
+}
