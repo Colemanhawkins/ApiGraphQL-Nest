@@ -21,7 +21,8 @@ export class ListItemService {
       item: { id: itemId },
       list: { id: listId },
     });
-    return this.listItemsRepository.save(newListItem);
+    await this.listItemsRepository.save(newListItem);
+    return this.findOne(newListItem.id);
   }
 
   findAll(list: List, paginationArgs: PaginationArgs, searchArgs: SearchArgs) {
